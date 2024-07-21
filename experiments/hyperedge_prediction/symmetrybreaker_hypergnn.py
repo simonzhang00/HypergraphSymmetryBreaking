@@ -325,7 +325,7 @@ def regsubreplacer_G(open_verts, open_edges_, max_open_verts, max_iter):
         CC = list(nx.connected_components(G_search))
         num_cc += len(CC)
         for cc in CC:
-            if len(cc) >= 3:
+            if len(cc) >= 2:
                 C = G_search.subgraph(cc)
                 deg_p_nodes = str(sorted([G.degree()[int(v)] for v in C.nodes()]))
 
@@ -404,7 +404,7 @@ def regsubreplacer(open_verts, open_hyperedges_, max_open_verts, max_iter):
         num_cc+= len(CC)
         
         for cc in CC:
-            if len(cc) >= 4:
+            if len(cc) >= 3:
                 C= B_search.subgraph(cc)
                 left, right = nx.bipartite.sets(C)
                 if np.min(list(left)) >= max_open_verts:
@@ -416,7 +416,7 @@ def regsubreplacer(open_verts, open_hyperedges_, max_open_verts, max_iter):
                 
                 deg_p_nodes = str(sorted([B.degree()[int(v)] for v in left]))
                 #print("c degrees: ", deg_p_nodes)
-                if deg_p_nodes not in Eisom_byDeg and len(left) >= 3:
+                if deg_p_nodes not in Eisom_byDeg and len(left) >= 2:
                     reg_nodes.append([int(i) for i in left])
                     reg_hyperedges += [[int(b) for b in B_search[r]] for r in right]
                     reg_hyperedges_len+=[len(reg_nodes)-1]*len(right)
