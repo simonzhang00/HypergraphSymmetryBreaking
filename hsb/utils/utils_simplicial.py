@@ -37,24 +37,24 @@ def neg_extra_sample_sizes(num_pos_train, num_train_hard_negatives, num_pos_val,
 
     return tr_extra_neg_samples, val_extra_neg_samples, te_extra_neg_samples
 
-def make_train_test_data_shuffle(dataset, prctl1=80, prctl2=85):
+def make_train_test_data_shuffle(dataset, prctl1 = 80, prctl2 = 85):
     '''Returns lists of train/test cliques (maximal simplices) and train/test simplices from higher-order temporal data.
     Input: name of the dataset, test percentiles (example: 80-100 means that test set starts on 80-percentile and ends on 100-percentile)
     Output: lists cliques_train, cliques_test, simplices_train, simplices_test
     '''
     np.random.seed(RANDOM_SEED)
-    nverts_df = pd.read_csv('../../hsb/data/processed-data/%s/%s-nverts.txt' % (dataset, dataset), names=['nverts'])
+    nverts_df = pd.read_csv('../../hsb/data/processed-data/%s/%s-nverts.txt' % (dataset, dataset), names = ['nverts'])
     nverts_df['simplex_id'] = nverts_df.index
 
-    simplex_ids = nverts_df.apply(lambda x: [x.simplex_id, ] * int(x.nverts), axis=1).values
+    simplex_ids = nverts_df.apply(lambda x: [x.simplex_id, ] * int(x.nverts), axis = 1).values
     simplex_ids = [item for l in simplex_ids for item in l]
 
-    simplices_df = pd.read_csv('../../hsb/data/processed-data/%s/%s-simplices.txt' % (dataset, dataset), names=['simplex']).astype(
+    simplices_df = pd.read_csv('../../hsb/data/processed-data/%s/%s-simplices.txt' % (dataset, dataset), names = ['simplex']).astype(
         str)
     simplices_df['simplex_id'] = simplex_ids
 
 
-    times_df = pd.read_csv('../../hsb/data/processed-data/%s/%s-times.txt' % (dataset, dataset), names=['times'])
+    times_df = pd.read_csv('../../hsb/data/processed-data/%s/%s-times.txt' % (dataset, dataset), names = ['times'])
 
     data = simplices_df.groupby('simplex_id').apply(lambda x: frozenset(x.simplex))
 
@@ -95,24 +95,24 @@ def make_train_test_data_shuffle(dataset, prctl1=80, prctl2=85):
 
     return cliques_train, cliques_val, cliques_test, list(data_train), list(data_val), list(data_test)
 
-def make_train_test_data(dataset, prctl1=80, prctl2=85):
+def make_train_test_data(dataset, prctl1 = 80, prctl2 = 85):
     '''Returns lists of train/test cliques (maximal simplices) and train/test simplices from higher-order temporal data.
     Input: name of the dataset, test percentiles (example: 80-100 means that test set starts on 80-percentile and ends on 100-percentile)
     Output: lists cliques_train, cliques_test, simplices_train, simplices_test
     '''
 
-    nverts_df = pd.read_csv('../../hsb/data/processed-data/%s/%s-nverts.txt' % (dataset, dataset), names=['nverts'])
+    nverts_df = pd.read_csv('../../hsb/data/processed-data/%s/%s-nverts.txt' % (dataset, dataset), names = ['nverts'])
     nverts_df['simplex_id'] = nverts_df.index
 
-    simplex_ids = nverts_df.apply(lambda x: [x.simplex_id, ] * int(x.nverts), axis=1).values
+    simplex_ids = nverts_df.apply(lambda x: [x.simplex_id, ] * int(x.nverts), axis = 1).values
     simplex_ids = [item for l in simplex_ids for item in l]
 
-    simplices_df = pd.read_csv('../../hsb/data/processed-data/%s/%s-simplices.txt' % (dataset, dataset), names=['simplex']).astype(
+    simplices_df = pd.read_csv('../../hsb/data/processed-data/%s/%s-simplices.txt' % (dataset, dataset), names = ['simplex']).astype(
         str)
     simplices_df['simplex_id'] = simplex_ids
 
 
-    times_df = pd.read_csv('../../hsb/data/processed-data/%s/%s-times.txt' % (dataset, dataset), names=['times'])
+    times_df = pd.read_csv('../../hsb/data/processed-data/%s/%s-times.txt' % (dataset, dataset), names = ['times'])
 
     cutoff1 = np.percentile(times_df.times, prctl1)
     cutoff2 = np.percentile(times_df.times, prctl2)
@@ -167,14 +167,14 @@ def s2vhasse_to_n2vformat(hasse_nx):
     if frozenset() in hasse_nx.nodes():
         hasse_nx.remove_node(frozenset())
 
-    nx.relabel_nodes(hasse_nx, {n: ','.join(map(str, sorted(map(int, n)))) for n in hasse_nx.nodes()}, copy=False)
+    nx.relabel_nodes(hasse_nx, {n: ','.join(map(str, sorted(map(int, n)))) for n in hasse_nx.nodes()}, copy = False)
 
-    # max_comp = sorted(nx.connected_components(hasse_nx), key=len, reverse=True)[0]
+    # max_comp = sorted(nx.connected_components(hasse_nx), key = len, reverse = True)[0]
     # hasse_nx = nx.subgraph(hasse_nx, max_comp)
 
-    map_node_weight = {n: float(w['weight']) for n, w in hasse_nx.nodes(data=True)}
+    map_node_weight = {n: float(w['weight']) for n, w in hasse_nx.nodes(data = True)}
     hasse_nx = hasse_nx.to_directed()
-    for u, v, d in hasse_nx.edges(data=True):
+    for u, v, d in hasse_nx.edges(data = True):
         d['weight'] = map_node_weight[v]
 
     return hasse_nx
@@ -225,9 +225,9 @@ def map_sample_neighbors(neighs_, size_, tuple_):
 
     if len(candidate_list) < size_:
         candidate_list = candidate_list + list(node_set)
-        return list(tuple_) + list(np.random.choice(candidate_list, size=size_, replace=True))
+        return list(tuple_) + list(np.random.choice(candidate_list, size = size_, replace = True))
 
-    return list(tuple_) + list(np.random.choice(candidate_list, size=size_, replace=False))
+    return list(tuple_) + list(np.random.choice(candidate_list, size = size_, replace = False))
 
 
 def map_sample_common_neighbors(neighs_, tuple_):
@@ -255,7 +255,7 @@ def naive_negative_sampling(node_list, sample_size, tuple_size):
     Output: numpy array of strings objects (comma-separated node indices)
     '''
     rs = np.random.RandomState(RANDOM_SEED)
-    random_tuple = rs.choice(node_list, size=tuple_size * sample_size).reshape(-1, tuple_size)
+    random_tuple = rs.choice(node_list, size = tuple_size * sample_size).reshape(-1, tuple_size)
     return pd.unique([','.join(map(str, sorted(map(int, u)))) \
                       for u in random_tuple if len(set(u)) == tuple_size])
 
@@ -266,10 +266,10 @@ def motifs_negative_sampling(node_list, neighs_dict, sample_size, tuple_size):
     Output: numpy array of strings objects (comma-separated node indices)
     '''
     rs = np.random.RandomState(RANDOM_SEED)
-    motifs_tuple = rs.choice(node_list, size=sample_size)[:, np.newaxis]
+    motifs_tuple = rs.choice(node_list, size = sample_size)[:, np.newaxis]
 
     for _ in range(tuple_size - 1):
-        with Pool(processes=20) as pool:
+        with Pool(processes = 20) as pool:
             motifs_tuple = np.array(pool.map(partial(map_sample_neighbors, neighs_dict, 1), motifs_tuple))
             pool.close()
             pool.join()
@@ -283,9 +283,9 @@ def stars_negative_sampling(node_list, neighs_dict, sample_size, tuple_size):
     Output: numpy array of strings objects (comma-separated node indices)
     '''
     rs = np.random.RandomState(RANDOM_SEED)
-    stars_tuple = rs.choice(node_list, size=sample_size)[:, np.newaxis]
+    stars_tuple = rs.choice(node_list, size = sample_size)[:, np.newaxis]
 
-    with Pool(processes=20) as pool:
+    with Pool(processes = 20) as pool:
         stars_tuple = np.array(pool.map(partial(map_sample_neighbors, neighs_dict, tuple_size - 1), stars_tuple))
         pool.close()
         pool.join()
@@ -299,9 +299,9 @@ def cliques_negative_sampling(simplex_list, neighs_dict, nodes_train, sample_siz
     Output: numpy array of strings objects (comma-separated node indices)
     '''
     rs = np.random.RandomState(RANDOM_SEED)
-    cliques_tuple = rs.choice([s for s in simplex_list if len(s) == tuple_size], size=sample_size)
-    # barrier = multiprocessing.Barrier(10, timeout=10)
-    with Pool(processes=20) as pool:
+    cliques_tuple = rs.choice([s for s in simplex_list if len(s) == tuple_size], size = sample_size)
+    # barrier = multiprocessing.Barrier(10, timeout = 10)
+    with Pool(processes = 20) as pool:
         cliques_tuple = pool.map(partial(map_sample_common_neighbors, neighs_dict), cliques_tuple)
         pool.close()
         pool.join()
@@ -313,8 +313,8 @@ def cliques_negative_sampling(simplex_list, neighs_dict, nodes_train, sample_siz
 
 from .calibrated_metrics_hypergraph import *
 
-def classification_score_from_x(positive_test, negative_test, embedding_array, embedding_vocab, norder, nruns=50,
-                                max_test_size=5000):
+def classification_score_from_x(positive_test, negative_test, embedding_array, embedding_vocab, norder, nruns = 50,
+                                max_test_size = 5000):
     '''Returns positive/negative examples with corresponding auc-pr scores, computed from the model embedding matrix.
     Input: numpy arrays of positive and negative tuples (comma-separated node indices), numpy array of simplex embedding,  dictionary, order of similarity (s_0, s_1, etc.), number of realizations, max number of samples per realization.
     Output: list of dictionaries with (y_test, y_pred, auc-pr, node_idx) as items
@@ -349,16 +349,16 @@ def classification_score_from_x(positive_test, negative_test, embedding_array, e
                                                                            combinations(a.split(','), norder + 1)], 2)],
                                       all_test_x)))
 
-        y_pred = embedding_array[tf_arrays].prod(axis=2).sum(axis=-1).mean(axis=-1)
+        y_pred = embedding_array[tf_arrays].prod(axis = 2).sum(axis = -1).mean(axis = -1)
         y_test = np.array([1, ] * len(positive_test_x) + [0, ] * len(negative_test_x))
 
-        scores.append({'y_test': y_test, 'y_pred': y_pred, 'auc_pr': average_precision(y_test, y_pred, pi0=0.5),
+        scores.append({'y_test': y_test, 'y_pred': y_pred, 'auc_pr': average_precision(y_test, y_pred, pi0 = 0.5),
                        'idx_test': np.array([s.split(',') for s in all_test_x])})
 
     return scores
 
-def classification_score_from_y_full(y_test, y_score, nruns=50):
-    if len(np.asarray(y_test).shape)>1 and len(np.asarray(y_score).shape)>1:
+def classification_score_from_y_full(y_test, y_score, nruns = 50):
+    if len(np.asarray(y_test).shape) > 1 and len(np.asarray(y_score).shape) > 1:
         y_test_01= y_test[:,0]
         y_score_p= y_score[:,0]
         # Data to plot precision - recall curve
@@ -372,7 +372,7 @@ def classification_score_from_y_full(y_test, y_score, nruns=50):
     return (auc_precision_recall, sklearn.metrics.roc_auc_score(y_test, y_score))
 
 
-def classification_score_from_y(y_test, y_pred, nruns=50):
+def classification_score_from_y(y_test, y_pred, nruns = 50):
     '''Returns classification scores for positive/negative examples opportunely sampled.
     Input: numpy arrays with classification labels and predicted scores, number of realizations.
     Output: average auc-pr, std. dev. auc-pr
@@ -384,10 +384,10 @@ def classification_score_from_y(y_test, y_pred, nruns=50):
     pos_ = idx[y_test == 1]
     neg_ = idx[y_test == 0]
 
-    pos_sizes = rs.randint(1, 1 + pos_.shape[0], size=nruns)
-    pos_samples = np.split(rs.choice(pos_, size=np.sum(pos_sizes)), np.cumsum(pos_sizes))
-    neg_sizes = rs.randint(1, 1 + neg_.shape[0], size=nruns)
-    neg_samples = np.split(rs.choice(neg_, size=np.sum(neg_sizes)), np.cumsum(neg_sizes))
+    pos_sizes = rs.randint(1, 1 + pos_.shape[0], size = nruns)
+    pos_samples = np.split(rs.choice(pos_, size = np.sum(pos_sizes)), np.cumsum(pos_sizes))
+    neg_sizes = rs.randint(1, 1 + neg_.shape[0], size = nruns)
+    neg_samples = np.split(rs.choice(neg_, size = np.sum(neg_sizes)), np.cumsum(neg_sizes))
 
     aucs = []
     for run in range(nruns):
@@ -395,12 +395,12 @@ def classification_score_from_y(y_test, y_pred, nruns=50):
         neg_sample = np.unique(neg_samples[run])
         y_test_sample = np.concatenate((y_test[pos_sample], y_test[neg_sample]))
         y_pred_sample = np.concatenate((y_pred[pos_sample], y_pred[neg_sample]))
-        aucs.append(average_precision(y_test_sample, y_pred_sample, pi0=0.5))
+        aucs.append(average_precision(y_test_sample, y_pred_sample, pi0 = 0.5))
 
     return np.mean(aucs), np.std(aucs)
 
 
-def classification_score_from_y4(y_test, y_pred, nruns=50):
+def classification_score_from_y4(y_test, y_pred, nruns = 50):
     '''Returns classification scores for positive/negative examples opportunely sampled in case of extremely high class imbalance.
     Input: numpy arrays with classification labels and predicted scores, number of realizations.
     Output: average auc-pr, std. dev. auc-pr
@@ -416,8 +416,8 @@ def classification_score_from_y4(y_test, y_pred, nruns=50):
         pos_ = idx[y_test == 0]
         neg_ = idx[y_test == 1]
 
-    neg_sizes = rs.randint(1, 1 + neg_.shape[0], size=nruns)
-    neg_samples = np.split(rs.choice(neg_, size=np.sum(neg_sizes)), np.cumsum(neg_sizes))
+    neg_sizes = rs.randint(1, 1 + neg_.shape[0], size = nruns)
+    neg_samples = np.split(rs.choice(neg_, size = np.sum(neg_sizes)), np.cumsum(neg_sizes))
 
     aucs = []
     for run in range(nruns):
@@ -425,11 +425,14 @@ def classification_score_from_y4(y_test, y_pred, nruns=50):
         neg_sample = np.unique(neg_samples[run])
         y_test_sample = np.concatenate((y_test[pos_sample], y_test[neg_sample]))
         y_pred_sample = np.concatenate((y_pred[pos_sample], y_pred[neg_sample]))
-        aucs.append(average_precision(y_test_sample, y_pred_sample, pi0=0.5))
+        aucs.append(average_precision(y_test_sample, y_pred_sample, pi0 = 0.5))
 
     return np.mean(aucs), np.std(aucs)
 
 def find_chordless_cycles(A, K):
+    r"""
+    Finds all the chordless cycles up to size K of an adjacency matrix A
+    """
     N= A.shape[0]
     cycles= []
     for i in range(N-2):
@@ -441,11 +444,11 @@ def find_chordless_cycles(A, K):
                 if (not A[i,k]):
                     continue
                 if (A[j,k]):
-                    cycles.append(3);
-                    continue;
+                    cycles.append(3)
+                    continue
                 v= [j,i,k]
                 candidates.append(v)
-                while(len(candidates)>0):
+                while(len(candidates) > 0):
                     v= candidates.pop(-1)
                     if len(v)==0:
                         continue
@@ -456,7 +459,7 @@ def find_chordless_cycles(A, K):
                             continue
                         if not (m in v):
                             continue
-                        if np.sum(A[m][v])>0:
+                        if np.sum(A[m][v]) > 0:
                             continue
 
                         if (adj[m][j]):
@@ -466,6 +469,6 @@ def find_chordless_cycles(A, K):
                             candidates.append(v)
     return cycles
 
-if __name__=="__main__":
-    A= np.ones((10,10))-np.diag([1]*10)
+if __name__ == "__main__":
+    A = np.ones((10,10)) - np.diag([1]*10)
     print(find_chordless_cycles(A, 5))
