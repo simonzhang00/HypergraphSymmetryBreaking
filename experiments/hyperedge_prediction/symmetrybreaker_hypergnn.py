@@ -320,7 +320,7 @@ def regsubreplacer(open_verts, open_hyperedges_, max_open_verts, max_iter):
 
     B.add_edges_from(incidences)
     assert(len(set(B_nodes))==len(open_verts))
-    g = _construct_graph_from_networkx(B, open_verts+list(x+ max_open_verts for x in range(len(open_hyperedges_))), incidences)
+    g = _construct_graph_from_networkx(B, open_verts+list(x + max_open_verts for x in range(len(open_hyperedges_))), incidences)
     graphs = [g]
 
     gwl = WL1.WeisfeilerLehman()
@@ -389,7 +389,7 @@ def regsubreplacer(open_verts, open_hyperedges_, max_open_verts, max_iter):
                 if deg_p_nodes not in Eisom_byDeg and len(left) >= 3:
                     reg_nodes.append([int(i) for i in left])
                     reg_hyperedges += [[int(b) for b in B_search[r]] for r in right]
-                    reg_hyperedges_len += [len(reg_nodes)-1]*len(right)
+                    reg_hyperedges_len += [len(reg_nodes) - 1]*len(right)
     return reg_nodes, reg_hyperedges, num_cc, reg_hyperedges_len
 
 def load_data(dataset = 'contact-high-school', pos_embedding = "laplacian_emap", tuple_size = 3):
@@ -649,7 +649,7 @@ if __name__ == "__main__":
     net = net.to(device)
     criterion = VertexSetAgg(args.embdim, weight_decay).to(device)
     optimizer = torch.optim.Adam(net.parameters(), lr = lr)
-    Gorig= G.clone()
+    Gorig = G.clone()
     best_state, best_val, best_epoch = None, 0, -1
     for epoch in range(epoch_max):
         if len(reg_nodes) > 0 and args.p_sym > 0.0:

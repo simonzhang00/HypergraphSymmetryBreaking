@@ -181,7 +181,7 @@ def invert_index(list):
     inverted_index[item] = i
   return inverted_index
 
-def load_data(dataset = 'contact-high-school', pos_embedding = "laplacian_emap", max_path_len = 20, max_cycle_len = 20, tuple_size = 3, S = 10, K = 100, cycle_sampling = "hyperpagerank"):
+def load_data(dataset = 'contact-high-school', pos_embedding = "laplacian_emap", tuple_size = 3):
     """
     Constructs train-val-test splits from the datasets. Also computes the positional embeddings.
     """
